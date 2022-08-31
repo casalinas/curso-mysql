@@ -1,0 +1,201 @@
+- abrimos cmd para ejecutar servidor mysql
+
+- mysql -u root -p (enter)
+- escribimos contraseña de instalación
+- creamos usuario de bd 
+CREATE USER 'admin'@'localhost' IDENTIFIED BY 'system';
+
+- damos todos los privilegios a admin de todas las bases de datos
+GRANT ALL PRIVILEGES ON *.* TO 'admin'@'localhost';
+
+- nos volvemos a conectar con admin y creamos base de datos
+CREATE DATABASE MiBase;
+
+(escribir instrucciones en mayúsculas)
+
+- elegimos la base de datos con la que trabajaremos
+ USE MiBase;
+
+- abrimos otra consola y vamos a donde estan los archivos de sqlite3
+- vamos a la direción y ejecutamos "sqlite3 MiBase.db" para abrir base de datos creada
+
+- para salir de slqite3 ".quit", para salir de mysql "exit"
+---------------------------------------------------------------
+Creación de primera tabla e insersión de datos
+con -h configuramos host
+- mysql -u admin -h localhost -p 
+
+- SHOW DATABASES;
+
+- USE MiBase;
+- SHOW TABLES;
+
+- creamos tabla
+CREATE TABLE Inscripciones (Materia varchar(30), Asignatura varchar(30), Nombre varchar(30), Apellido varchar(30), Documento varchar(15));
+
+- vemos estructura de tabla desde consola
+ DESCRIBE TABLE Inscripciones
+
+- Consultamos datos de tabla
+SELECT * FROM Inscripciones (nos dice que está vacia)
+
+- Insertamos datos en tabla 
+INSERT INTO Inscripciones VALUES('Matemática','Cálculo 1','Vladimir','Rodriguez','123456');
+
+- nos vamos a carpeta de sqlite desde cmd
+ejecutamos base de datos
+- sqlite3 MiBase.db
+
+- .header on nos deja ver cabeceras de tablas
+- .mode column arma columnas de forma más estructurada
+
+--------------------------------------------------------
+7. Carga masiva de datos a una tabla
+
+- Nos conectamos a mysql
+mysql -u admin -p (enter para ingresar contraseña anónima)
+-  use MiBase
+- INSERT INTO Inscripciones VALUES ('Matemática','Cálculo','Vladimir','Rodríguez','000000');
+-  SELECT * FROM Inscipciones;
+- SHOW DATABASES;
+- SHOW TABLES;
+-  INSERT INTO inscripciones VALUES ('Matemática','Cálculo','Vladimir','Rodríguez','000000');
+- eliminamos filas
+ DELETE from inscripciones WHERE Apellido = 'Saldivar';
+- Insertamos dos filas con una sola sentencia
+
+INSERT INTO inscripciones VALUES ('Computación','Informática','Juan','Perez','111'),('Biología','Linfático','Ana','González','222');
+
+Otra manera de insertar varias filas
+- mysql> INSERT INTO inscripciones VALUES (espacio)
+    -> ('Física','Cuantica','Joana','Lines','333'), (espacio)
+    -> ('Física','Cuantica','Lilina','Miraballes','444'), (espacio)
+    -> ('Matemáticas','Geometria','Vladimir','Rogriguez','555'); 
+Query OK, 3 rows affected (0.00 sec)
+Records: 3  Duplicates: 0  Warnings: 0
+
+- Podemos usar tantas filas como queramos, el ; dara por terminada la sentencia
+
+- Para importar base de datos de un archivo:
+LOAD DATA INFILE 'C:\Users\carlo\Desktop\curso mysql\mysql.txt' INTO TABLE inscripciones;
+(no me funciono este metodo asi que use el que viene mas abajo)
+
+- Alterar tabla para cambiar tipo de datos o largo de los mismos
+ ALTER TABLE inscripciones MODIFY Materia varchar(50);
+
+- Metodo efectivo para carga masiva de datos desde archivo convertido a csv con separación por ','
+
+mysql> load data infile 'C:\\Users\\carlo\\Desktop\\curso mysql\\a.csv'
+    -> into table inscripciones
+    -> fields terminated by ','
+    -> lines terminated by '\r\n';
+Query OK, 120 rows affected (0.00 sec)
+Records: 120  Deleted: 0  Skipped: 0  Warnings: 0
+
+--------------------------------------------------------------------------------
+Tipos de datos 8.
+
+----------------------------------------------------------------------------------
+Selección selectiva 9
+
+- carga masiva de datos que funciono
+LOAD DATA INFILE 'C:\\Users\\carlo\\Desktop\\curso mysql\\udemy\\carga masiva de datos\\CursosMySQL.txt' INTO TABLE cursos;
+
+- consultas mas complejas
+- select * from inscripciones where (materia = 'Psicologia' and asignatura = 'Psicologia') or materia = 'Fisica';
+- select * from inscripciones where materia = 'Psicologia' and asignatura = 'Psicologia';
+-  select * from inscripciones where materia = 'Psicologia' or materia = 'Computacion';
+- select * from inscripciones where (materia = 'Psicologia' and asignatura = 'Psicologia') or materia = 'Fisica' or materia = 'Biología';
+- select * from inscripciones where documento < 11111130;
+- select * from cursos where nota >= 8 and asignatura ='Programacion'
+(este resultado trae notas menores a 8 por el uso incorrecto de los parentesis)
+- select * from cursos where nota >= 8 and asignatura ='Programacion' or asignatura ='Termodinamica';
+(lo solucionamos poniendo los parentesis asi)
+- mysql> select * from cursos where nota >= 8 and (asignatura ='Programacion' or asignatura ='Termodinamica');
+
+- estudiantes en programacion con notas > 9 y estudiantes de termodinamica con notas < 2;
+select * from cursos where (nota > 8 and asignatura ='Programacion') or (asignatura ='Termodinamica' and nota < 2);
+
+- uso del like
+(esto nos trae todas las asignaturas que comienzan con prog) 
+ - select * from cursos where asignatura like 'Prog%';
+
+si pongo el % antes de escribir la cadena a buscar, buscaria que termine
+de esa forma, ej:
+(esto nos trae todo lo que termina en cion)
+- select * from cursos where asignatura like '%cion';
+
+- para ver resultados limitados en la cantidad que queramos
+(esto nos trae solo 10 resultados ,aunque hayan más)
+select * from inscripciones limit 10;
+
+----------------------------------------------------------------------------------------------------
+Funciones count, sum, max, min y av: clase 10.
+
+(retorna el total de filas)
+-select count(nombre) from cursos;
+(retorna la cantidad de nombres sin repetir)
+- select count(distinct nombre) from cursos;
+(cuenta los alumnos con nota = a 10 mediante una subconsulta, debemos usar alias para subconsultas)
+- select count(*) from (select * from cursos where nota = 10) as cantidad;
+(se agrupa la consulta por nombre de asignatura y cuenta la cantidad de alumnos que estan en cada asignatura)
+- select nombre, count(*) from cursos group by nombre;
+(obtengo asignatura y nombre agrupados, y se cuentan los alumnos por nombre, ordenando por la cantidad de
+alumnos en cada ramo, en este caso el group by es completamente opcional, a diferencia de ORACLE)
+- select asignatura, nombre, count(*) as conteo from cursos group by nombre
+(aqui se agrupa por asignatura, lo que omite algunos nombres, por lo que hace más sentido eliminarlo de la
+consulta, cuando se agrupa por un valor mas grande que contiene mas cosas y se llama a una columna
+que hereda de la agrupada, solo se muestra el primer resultado de la sub columna, omitiendo el resto
+de resultados para priorizar el agrupamiento de la manera que lo solicitamos)
+- select asignatura, nombre, count(*) as conteo from cursos group by asignatura;
+(nos trae el resultado maximo)
+- select max(nota) from cursos;
+ (nos trae el nombre que comienza con la letra mas cercana a la z)
+- select max(nombre) from inscripciones; 
+(nos trae la mejor nota de cada nombre de asignatura)
+- select nombre, max(nota) from cursos group by nombre;
+(nos trae la nota minima de cada curso)
+- select nombre, min(nota) from cursos group by nombre;
+(suma el valor total de las notas diferentes)
+-  select sum(distinct nota) from cursos;
+(suma el valor total de las notas)
+-  select sum(nota) from cursos;
+(tengo la suma de notas por cada curso)
+-  select nombre, sum(distinct nota) from cursos group by nombre;
+(agrupamos por nombre de curso para ver el promedio de notas de cada uno)
+-  select nombre, avg(nota) from cursos group by nombre;
+(lo mismo pero con valores redondeados)
+- select nombre, round(avg(nota)) from cursos group by nombre;
+
+--------------- LINK CON MÁS FUNCIONES DE GRUPO DESDE LA DOCUMENTACIÓN DE MYSQL ---------------------------------------------------
+https://dev.mysql.com/doc/refman/8.0/en/aggregate-functions.html
+
+------------------------------------------------------------------------------------------------------------------
+Clase 11 gestion de registros y eliminación de bases de datos.
+(actualizamos nota, subiendola a 5 cuando estas sean menores al mismo valor)
+- update cursos set nota = 5 where nota < 5;
+(esto convierte a todos los valores de la columna nota en 3 y todos los documento en 123, hace falta
+el where para especificar)
+- update cursos set nota = 3, documento='123';
+(le pone un 4 a los loqueros)
+- update cursos set nota = 4 where asignatura ='Psicologia';
+(le pone un 5 a los de termodinamica 2)
+- update cursos set nota = 5 where nombre ='Termodinamica 2';
+(borramos el documento 11111;)
+- delete from cursos where documento = 11111;
+(sin where se borra toda la tabla, hay que tener cuidado porque no es reversible)
+- delete from cursos 
+(delete sirve para eliminar los campos de una tabla, pero no la tabla en si misma, para eliminar
+una tabla usamos "drop table")
+(elimine la tabla cursos y todo su contenido)
+- drop table cursos;
+(para eliminar toda una base de datos en mysql, no tiene vuelta atrás y elimina
+todos los datos y tablas que habian)
+- drop database nombre_BD; (MiBase)
+--------------------------------------------------------------------------------------------
+
+CAMBIO DE ESTRUCTURA EN UNA TABLA EXISTENTE, CLASE 12:
+
+Hemos eliminado la base de datos, por lo que volveremos a crear otra.
+- create database AdministracionCursos
+- use AdministracionCursos

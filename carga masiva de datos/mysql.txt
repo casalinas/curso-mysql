@@ -1,0 +1,21 @@
+- es un gestor de base de datos open source para almacenar datos relacionales
+- utiliza lenguaje sql(Structured Query Language)
+
+Preguntas
+
+select 
+
+Basándose en el modelo de la imagen 1, obtener la venta por proveedor, haciendo distinción si es un evento (dado por la tabla entrada) o un producto (dado por la tabla paquete)
+ ordenada por el total vendido en dinero de mayor a menor mediante una consulta SQL.
+Teniendo en cuenta el modelo anterior, idee un proceso que tenga que ser ejecutado cada cierto tiempo (automatización) y que obtenga información “relevante”. La respuesta debe 
+ser de forma de descripción/narración.
+Basado en la respuesta anterior con pseudocódigo o código simple escribir la solución a lo planteado. Obvie conexiones a la base de datos, inicialización de librerías, etc.
+
+
+
+Condiciones
+Las respuestas pueden estar en un repositorio el cual deben dejar público para poder ingresar y revisar las respuestas, o puede enviarlas dentro de una carpeta de un drive que también este público.
+La respuesta deben enviarla a vicente.gh@entrekids.cl con el asunto: "Nombre Apellido | Practica Ingeniero de datos" y dentro agregar el link en donde encontrar las respuestas.
+Tienen 2 días a partir de las 00:00 del día siguiente al envío de la prueba para poder enviar sus respuestas al correo especificado anteriormente. Ejemplo, se envía el mensaje el 2022-08-20 16:50:00, 
+los días empiezan a correr a partir de 2022-08-21 00:00:00, cerrándose el proceso el 2022-08-23 00:00:00.
+Si existe alguna duda, pueden enviarla al mismo correo mencionado anteriormente. Las respuestas a estas dudas se irán enlistando en este mismo documento.
